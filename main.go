@@ -6,7 +6,7 @@ import (
 )
 
 func SkinDataToImage(data []byte) (output image.Image) {
-	groups := [][]byte{}
+	var groups [][]byte
 	for _, bite := range data {
 		if len(groups) == 0 {
 			groups = append(groups, []byte{bite})
@@ -35,8 +35,6 @@ func SkinDataToImage(data []byte) (output image.Image) {
 func ImageToSkinData(img image.Image) (dat []byte) {
 	x := 0
 	y := 0
-
-	dat = []byte{}
 	for {
 		if x == 64 {
 			y = y + 1
