@@ -41,7 +41,7 @@ func ImageToSkinData(img image.Image) []byte {
 			y = y + 1
 			x = 0
 		}
-		if y == 64 {
+		if len(dat) == 64 * 64 * 4 {
 			break
 		}
 		here := img.At(x, y)
