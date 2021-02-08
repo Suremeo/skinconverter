@@ -32,7 +32,8 @@ func SkinDataToImage(data []byte) (output image.Image) {
 	return
 }
 
-func ImageToSkinData(img image.Image) (dat []byte) {
+func ImageToSkinData(img image.Image) []byte {
+	dat := make([]byte, 64 * 64 * 4)
 	x := 0
 	y := 0
 	for {
@@ -40,7 +41,7 @@ func ImageToSkinData(img image.Image) (dat []byte) {
 			y = y + 1
 			x = 0
 		}
-		if y == 65 {
+		if y == 64 {
 			break
 		}
 		here := img.At(x, y)
@@ -48,5 +49,5 @@ func ImageToSkinData(img image.Image) (dat []byte) {
 		dat = append(dat, uint8(r), uint8(g), uint8(b), uint8(a))
 		x = x + 1
 	}
-	return
+	return dat
 }
