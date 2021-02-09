@@ -2,52 +2,38 @@ package skinconverter
 
 import (
 	"image"
-	"image/color"
 )
 
 func SkinDataToImage(data []byte) (output image.Image) {
-	var groups [][]byte
-	for _, bite := range data {
-		if len(groups) == 0 {
-			groups = append(groups, []byte{bite})
-		} else {
-			if len(groups[len(groups) - 1]) == 4 {
-				groups = append(groups, []byte{bite})
-			} else {
-				groups[len(groups) - 1] = append(groups[len(groups) - 1], bite)
-			}
-		}
+	var width, height int
+	// all the default skin sizes
+	switch len(data) {
+	case 64 * 32 * 4:
+		width = 64
+		height = 32
+	case 64 * 64 * 4:
+		width = 64
+		height = 64
+	case 128 * 128 * 4:
+		width = 128
+		height = 128
+	default:
 	}
-	img := image.NewRGBA(image.Rect(0, 0, 64, 64))
-	x, y := 0, 0
-	for _, thing := range groups {
-		if x == 64 {
-			y = y + 1
-			x = 0
-		}
-		img.Set(x, y, color.RGBA{R: thing[0], G: thing[1], B: thing[2], A: thing[3]})
-		x = x + 1
-	}
-	output = img
+	im := image.NewRGBA(image.Rectangle{
+		Max: image.Point{X: width, Y: height},
+	})
+	im.Pix = data
+	output = im
 	return
 }
 
-func ImageToSkinData(img image.Image) []byte {
-	dat := make([]byte, 64 * 64 * 4)
-	x := 0
-	y := 0
-	for {
-		if x == 64 {
-			y = y + 1
-			x = 0
+func ImageToSkinData(img image.Image) (dat []byte) {
+	bounds := img.Bounds()
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, a := img.At(x, y).RGBA()
+			dat = append(dat, uint8(r), uint8(g), uint8(b), uint8(a))
 		}
-		if len(dat) == 64 * 64 * 4 {
-			break
-		}
-		here := img.At(x, y)
-		r, g, b, a := here.RGBA()
-		dat = append(dat, uint8(r), uint8(g), uint8(b), uint8(a))
-		x = x + 1
 	}
 	return dat
 }
